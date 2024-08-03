@@ -97,6 +97,7 @@ MIGRATION;
 
 namespace Database\Seeds;
 
+use Faker\Factory;
 use Database\AbstractSeeder;
 
 class {$className} extends AbstractSeeder {
@@ -106,7 +107,7 @@ class {$className} extends AbstractSeeder {
     // TODO: tableColumns配列の割り当て
     protected array \$tableColumns = [];
 
-    public function createRowData(): array {
+    public function createRowData(array \$imageHashList): array {
         // TODO: createRowData()メソッドの実装
         return [];
     }

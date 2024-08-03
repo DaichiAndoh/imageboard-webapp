@@ -2,10 +2,12 @@
 namespace Database;
 
 use Database\MySQLWrapper;
+use Helpers\StringHelper;
 
 abstract class AbstractSeeder implements Seeder {
     protected MySQLWrapper $conn;
     protected ?string $tableName = null;
+    protected int $recordCount = 5;
 
     // テーブルカラムは、'data_type' と 'column_name' を含む連想配列の配列
     protected array $tableColumns = [];
@@ -23,7 +25,8 @@ abstract class AbstractSeeder implements Seeder {
     }
 
     public function seed(): void {
-        $data = $this->createRowData();
+        $imageHashList = $this->createImages();
+        $data = $this->createRowData($imageHashList);
 
         if ($this->tableName === null) throw new \Exception('Class requires a table name');
         if (empty($this->tableColumns)) throw new \Exception('Class requires a columns');
@@ -42,10 +45,17 @@ abstract class AbstractSeeder implements Seeder {
         foreach ($row as $i=>$value) {
             $columnDataType = $this->tableColumns[$i]['data_type'];
             $columnName = $this->tableColumns[$i]['column_name'];
+            $nullable = $this->tableColumns[$i]['nullable'];
 
             if(!isset(static::AVAILABLE_TYPES[$columnDataType])) throw new \InvalidArgumentException(sprintf("The data type %s is not an available data type.", $columnDataType));
 
-            if (get_debug_type($value) !== $columnDataType) throw new \InvalidArgumentException(sprintf("Value for %s should be of type %s. Here is the current value: %s", $columnName, $columnDataType, json_encode($value)));
+            if ($nullable) {
+                $valueType = get_debug_type($value);
+                if ($valueType !== $columnDataType && $valueType !== 'null') throw new \InvalidArgumentException(sprintf("Value for %s should be of type %s or null. Here is the current value: %s", $columnName, $columnDataType, json_encode($value)));
+            } else {
+                $valueType = get_debug_type($value);
+                if ($valueType !== $columnDataType) throw new \InvalidArgumentException(sprintf("Value for %s should be of type %s. Here is the current value: %s", $columnName, $columnDataType, json_encode($value)));
+            }
         }
     }
 
@@ -71,5 +81,31 @@ abstract class AbstractSeeder implements Seeder {
         $stmt->bind_param($dataTypes, ...array_values($row));
 
         $stmt->execute();
+    }
+
+    // 画像ファイルを生成する
+    protected function createImages(): array {
+        $sampleImagePath = sprintf("%s/../Public/Images/sample.png", __DIR__);
+        $imageDir = sprintf("%s/../Public/Images/Originals/", __DIR__);
+        $thumbnailDir = sprintf("%s/../Public/Images/Thumbnails/", __DIR__);
+
+        $imageHashList = [];
+
+        for ($i = 0; $i < $this->recordCount; $i++) {
+            $imageHash = md5(StringHelper::generateRandomStr() . date('Y-m-d H:i:s'));
+
+            $imagePath = sprintf("%s/%s.png", $imageDir, $imageHash);
+            copy($sampleImagePath, $imagePath);
+
+            $thumbnailPath = sprintf("%s/%s.png", $thumbnailDir, $imageHash);
+            $output=null;
+            $retval=null;
+            $command = sprintf("magick %s -resize 300x300! %s", $sampleImagePath, $thumbnailPath);
+            exec($command, $output, $retval);
+
+            $imageHashList[] = $imageHash;
+        }
+
+        return $imageHashList;
     }
 }
