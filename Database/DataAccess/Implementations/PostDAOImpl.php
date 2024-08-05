@@ -71,6 +71,18 @@ class PostDAOImpl implements PostDAO {
         return true;
     }
 
+    public function getTotalCount(): int {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT COUNT(*) AS count FROM posts";
+
+        $result = $mysqli->query($query);
+
+        $row = $result->fetch_assoc();
+
+        return $row['count'];
+    }
+
     public function getAllThreads(int $offset, int $limit): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
@@ -78,7 +90,7 @@ class PostDAOImpl implements PostDAO {
 
         $results = $mysqli->prepareAndFetchAll($query, 'ii', [$offset, $limit]);
 
-        return $results === null ? [] : $this->resultsToPosts($results);
+        return $results === null ? [] : $this->resultsToApiData($results);
     }
 
     public function getReplies(Post $postData, int $offset, int $limit): array {
@@ -90,15 +102,15 @@ class PostDAOImpl implements PostDAO {
         return $results === null ? [] : $this->resultsToPosts($results);
     }
 
-    private function resultToPost(array $data): Post {
+    private function resultToPost(array $data): string {
         return new Post (
+            content: $data['content'],
+            createdAt: $data['created_at'],
+            updatedAt: $data['updated_at'],
             postId: $data['post_id'],
             replyToId: $data['reply_to_id'],
             subject: $data['subject'],
-            content: $data['content'],
             imageHash: $data['image_hash'],
-            createdAt: $data['created_at'],
-            updatedAt: $data['updated_at'],
         );
     }
 
@@ -107,6 +119,28 @@ class PostDAOImpl implements PostDAO {
 
         foreach($results as $result){
             $posts[] = $this->resultToPost($result);
+        }
+
+        return $posts;
+    }
+
+    private function resultToApiData(array $data): array {
+        return [
+            'postId' => $data['post_id'],
+            'replyToId' => $data['reply_to_id'],
+            'subject' => $data['subject'],
+            'content' => $data['content'],
+            'imageHash' => $data['image_hash'],
+            'createdAt' => $data['created_at'],
+            'updatedAt' => $data['updated_at'],
+        ];
+    }
+
+    private function resultsToApiData(array $results): array{
+        $posts = [];
+
+        foreach($results as $result){
+            $posts[] = $this->resultToApiData($result);
         }
 
         return $posts;

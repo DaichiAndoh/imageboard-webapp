@@ -10,6 +10,7 @@ interface PostDAO {
     public function update(Post $postData): bool;
     public function delete(int $id): bool;
     public function createOrUpdate(Post $postData): bool;
+    public function getTotalCount(): int;
 
     /**
      * @param int $offset
