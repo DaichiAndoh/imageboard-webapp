@@ -86,21 +86,18 @@ abstract class AbstractSeeder implements Seeder {
     // 画像ファイルを生成する
     protected function createImages(): array {
         $sampleImagePath = sprintf("%s/../Public/Images/sample.png", __DIR__);
-        $imageDir = sprintf("%s/../Public/Images/Originals/", __DIR__);
-        $thumbnailDir = sprintf("%s/../Public/Images/Thumbnails/", __DIR__);
-
         $imageHashList = [];
 
         for ($i = 0; $i < $this->recordCount; $i++) {
-            $imageHash = md5(StringHelper::generateRandomStr() . date('Y-m-d H:i:s'));
+            $imageHash = md5(StringHelper::generateRandomStr() . date('Y-m-d H:i:s')) . '.png';
 
-            $imagePath = sprintf("%s/%s.png", $imageDir, $imageHash);
-            copy($sampleImagePath, $imagePath);
+            $originalImagePath = sprintf("%s/../Public/Images/Originals/%s", __DIR__, $imageHash);
+            copy($sampleImagePath, $originalImagePath);
 
-            $thumbnailPath = sprintf("%s/%s.png", $thumbnailDir, $imageHash);
+            $thumbnailImagePath = sprintf("%s/../Public/Images/Thumbnails/%s", __DIR__, $imageHash);
             $output=null;
             $retval=null;
-            $command = sprintf("magick %s -resize 300x300! %s", $sampleImagePath, $thumbnailPath);
+            $command = sprintf("magick %s -resize 300x300! %s", $sampleImagePath, $thumbnailImagePath);
             exec($command, $output, $retval);
 
             $imageHashList[] = $imageHash;

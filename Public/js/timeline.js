@@ -23,7 +23,8 @@ function createThreadCard(thread) {
   // カードの作成
   const card = document.createElement('div');
   card.className = 'card my-3';
-  card.style.width = '80%';
+  card.style.width = '60%';
+  card.style.minWidth = '400px';
   card.style.margin = '0 auto';
 
   // カードボディの作成
@@ -46,10 +47,10 @@ function createThreadCard(thread) {
 
   // 画像の作成
   const img = document.createElement('img');
-  img.src = `http://localhost:8000/Images/Thumbnails/${thread.imageHash}.png`;
+  img.src = `http://localhost:8000/Images/Thumbnails/${thread.imageHash}`;
   img.alt = 'image';
   const imgAnker = document.createElement('a');
-  imgAnker.href = `http://localhost:8000/Images/Originals/${thread.imageHash}.png`;
+  imgAnker.href = `http://localhost:8000/Images/Originals/${thread.imageHash}`;
   imgAnker.appendChild(img);
   imgAnker.target = '_blank';
 

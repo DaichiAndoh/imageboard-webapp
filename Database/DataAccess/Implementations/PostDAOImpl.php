@@ -42,7 +42,7 @@ class PostDAOImpl implements PostDAO {
             VALUES (?, ?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE
             subject = VALUES(subject),
-            content = VALUES(content),
+            content = VALUES(content)
         SQL;
 
         $currentDateTime = date('Y-m-d H:i:s');
@@ -62,10 +62,10 @@ class PostDAOImpl implements PostDAO {
 
         if ($postData->getPostId() === null){
             $postData->setPostId($mysqli->insert_id);
-            $dateTime->setCreatedAt($dateTime->getCreatedAt() ?? date('Y-m-d H:i:s'));
-            $dateTime->setUpdatedAt($dateTime->getUpdatedAt() ?? date('Y-m-d H:i:s'));
+            $postData->setCreatedAt($postData->getCreatedAt() ?? date('Y-m-d H:i:s'));
+            $postData->setUpdatedAt($postData->getUpdatedAt() ?? date('Y-m-d H:i:s'));
         } else {
-            $dateTime->setUpdatedAt(date('Y-m-d H:i:s'));
+            $postData->setUpdatedAt(date('Y-m-d H:i:s'));
         }
 
         return true;
@@ -86,7 +86,7 @@ class PostDAOImpl implements PostDAO {
     public function getAllThreads(int $offset, int $limit): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = "SELECT * FROM posts LIMIT ?, ?";
+        $query = "SELECT * FROM posts ORDER BY post_id DESC LIMIT ?, ?";
 
         $results = $mysqli->prepareAndFetchAll($query, 'ii', [$offset, $limit]);
 

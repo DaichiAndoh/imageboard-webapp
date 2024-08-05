@@ -8,14 +8,17 @@ use Models\Traits\GenericModel;
 class Post implements Model {
     use GenericModel;
 
+    const SUBJECT_MAX_LENGTH = 30;
+    const CONTENT_MAX_LENGTH = 200;
+
     public function __construct(
         private string $content,
-        private string $createdAt,
-        private string $updatedAt,
         private ?int $postId = null,
         private ?int $replyToId = null,
         private ?string $subject = null,
         private ?string $imageHash = null,
+        private ?string $createdAt = null,
+        private ?string $updatedAt = null,
     ) {}
 
     public function getPostId(): ?int {
@@ -58,7 +61,7 @@ class Post implements Model {
         $this->imageHash = $imageHash;
     }
 
-    public function getCreatedAt(): string {
+    public function getCreatedAt(): ?string {
         return $this->createdAt;
     }
 
@@ -66,7 +69,7 @@ class Post implements Model {
         $this->createdAt = $createdAt;
     }
 
-    public function getUpdatedAt(): string {
+    public function getUpdatedAt(): ?string {
         return $this->updatedAt;
     }
 
