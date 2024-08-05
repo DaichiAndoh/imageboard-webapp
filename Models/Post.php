@@ -9,13 +9,13 @@ class Post implements Model {
     use GenericModel;
 
     public function __construct(
+        private string $content,
+        private string $createdAt,
+        private string $updatedAt,
         private ?int $postId = null,
         private ?int $replyToId = null,
         private ?string $subject = null,
-        private string $content,
         private ?string $imageHash = null,
-        private string $createdAt,
-        private string $updatedAt,
     ) {}
 
     public function getPostId(): ?int {

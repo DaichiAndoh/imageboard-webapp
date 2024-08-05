@@ -3,7 +3,10 @@
         "psr-4": {
             "Commands\\": "Commands/",
             "Database\\": "Database/",
-            "Helpers\\": "Helpers/"
+            "Exceptions\\": "Exceptions/",
+            "Helpers\\": "Helpers/",
+            "Models\\": "Models/",
+            "Response\\": "Response/"
         }
     },
     "require": {
