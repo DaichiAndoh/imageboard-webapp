@@ -10,7 +10,7 @@ async function getAllThreads() {
   return resData;
 }
 
-function insertThreadEl(threads) {
+function insertThreadEls(threads) {
   const timeline = document.getElementById('timeline');
 
   for (const thread of threads) {
@@ -58,8 +58,8 @@ function createThreadCard(thread) {
   const hr = document.createElement('hr');
 
   // 返信リンクの作成
-  const link = document.createElement('button');   
-  link.type = 'button';
+  const link = document.createElement('a');
+  link.href = `http://localhost:8000/thread/${thread.postId}`;
   link.className = 'btn btn-link';
   link.textContent = 'Threadを確認する';
 
@@ -96,15 +96,14 @@ async function loadTimeline() {
 
   if (resData.success) {
     offset += limit;
-    insertThreadEl(resData.threads);
+    insertThreadEls(resData.threads);
   
     if (loadAllThreads(resData.totalCount)) {
       hideMoreThreadsBtn();
     }
   } else {
-    const errorAlert = document.getElementById('alert-danger');
-    errorAlert.innerText = resData.error;
-    errorAlert.style.display = 'block';
+    localStorage.setItem('e', resData.error);
+    window.location.href = '/';
     hideMoreThreadsBtn();
   }
 }

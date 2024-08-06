@@ -12,11 +12,11 @@ class PostDAOImpl implements PostDAO {
         return $this->createOrUpdate($postData);
     }
 
-    public function getById(int $id): ?Post {
+    public function getById(int $id): ?array {
         $mysqli = DatabaseManager::getMysqliConnection();
         $post = $mysqli->prepareAndFetchAll("SELECT * FROM posts WHERE post_id = ?", 'i' , [$id])[0] ?? null;
 
-        return $post === null ? null : $this->resultToPost($post);
+        return $post === null ? null : $this->resultToAPIData($post);
     }
 
     public function update(Post $postData): bool {
@@ -71,10 +71,10 @@ class PostDAOImpl implements PostDAO {
         return true;
     }
 
-    public function getTotalCount(): int {
+    public function getTotalCountOfThread(): int {
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = "SELECT COUNT(*) AS count FROM posts";
+        $query = "SELECT COUNT(*) AS count FROM posts WHERE reply_to_id IS NULL";
 
         $result = $mysqli->query($query);
 
@@ -83,26 +83,36 @@ class PostDAOImpl implements PostDAO {
         return $row['count'];
     }
 
+    public function getTotalCountOfReply(int $postId): int {
+        $mysqli = DatabaseManager::getMysqliConnection();
+
+        $query = "SELECT COUNT(*) AS count FROM posts WHERE reply_to_id = ?";
+
+        $result = $mysqli->prepareAndFetchAll($query, 'i', [$postId]);
+
+        return $result[0]['count'] ?? 0;
+    }
+
     public function getAllThreads(int $offset, int $limit): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
-        $query = "SELECT * FROM posts ORDER BY post_id DESC LIMIT ?, ?";
+        $query = "SELECT * FROM posts WHERE reply_to_id IS NULL ORDER BY post_id DESC LIMIT ?, ?";
 
         $results = $mysqli->prepareAndFetchAll($query, 'ii', [$offset, $limit]);
 
         return $results === null ? [] : $this->resultsToApiData($results);
     }
 
-    public function getReplies(Post $postData, int $offset, int $limit): array {
+    public function getReplies(int $threadId, int $offset, int $limit): array {
         $mysqli = DatabaseManager::getMysqliConnection();
 
         $query = "SELECT * FROM posts WHERE reply_to_id = ? LIMIT ?, ?";
 
-        $results = $mysqli->prepareAndFetchAll($query, 'iii', [$postData->getPostId(), $offset, $limit]);
-        return $results === null ? [] : $this->resultsToPosts($results);
+        $results = $mysqli->prepareAndFetchAll($query, 'iii', [$threadId, $offset, $limit]);
+        return $results === null ? [] : $this->resultsToApiData($results);
     }
 
-    private function resultToPost(array $data): string {
+    private function resultToPost(array $data): Post {
         return new Post (
             content: $data['content'],
             createdAt: $data['created_at'],
