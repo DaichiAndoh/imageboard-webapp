@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const resData = await createThread(formData);
 
     if (resData.success) {
-      localStorage.setItem('s', 'Threadの作成に成功しました。');
+      localStorage.setItem('s', 'Threadを作成しました。');
       window.location.href = '/';
     } else if (resData.field) {
       const field = document.getElementById(resData.field);

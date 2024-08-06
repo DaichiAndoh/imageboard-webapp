@@ -1,5 +1,6 @@
 let offset = 0;
 const limit = 10;
+const MAX_LOAD_REPLY_NUM = 100;
 
 async function getThread() {
   const path = window.location.pathname;
@@ -39,45 +40,43 @@ function insertReplyEls(replies) {
 }
 
 function createThreadCard(thread) {
-  // カードの作成
+  // カード
   const card = document.createElement('div');
   card.className = 'card my-3';
-  card.style.width = '60%';
-  card.style.minWidth = '400px';
-  card.style.margin = '0 auto';
 
-  // カードボディの作成
+  // カードボディ
   const cardBody = document.createElement('div');
   cardBody.className = 'card-body';
 
-  // タイトルの作成
+  // タイトル
   const cardTitle = document.createElement('h5');
   cardTitle.className = 'card-title';
   cardTitle.textContent = thread.subject;
 
-  // 日付の作成
+  // 日付
   const cardSubtitle = document.createElement('h6');
   cardSubtitle.className = 'card-subtitle mb-2 text-muted';
   cardSubtitle.textContent = thread.createdAt;
 
-  // コンテンツの作成
+  // コンテンツ
   const content = document.createElement('p');
   content.textContent = thread.content;
 
-  // 画像の作成
+  // 画像
   const img = document.createElement('img');
   img.src = `http://localhost:8000/Images/Thumbnails/${thread.imageHash}`;
   img.alt = 'image';
-  const imgAnker = document.createElement('a');
-  imgAnker.href = `http://localhost:8000/Images/Originals/${thread.imageHash}`;
-  imgAnker.appendChild(img);
-  imgAnker.target = '_blank';
+  const imgLink = document.createElement('a');
+  imgLink.href = `http://localhost:8000/Images/Originals/${thread.imageHash}`;
+  imgLink.target = '_blank';
+  imgLink.rel = "noopener noreferrer";
+  imgLink.appendChild(img);
 
   // 要素を組み合わせる
   cardBody.appendChild(cardTitle);
   cardBody.appendChild(cardSubtitle);
   cardBody.appendChild(content);
-  if (thread.imageHash) cardBody.appendChild(imgAnker);
+  if (thread.imageHash) cardBody.appendChild(imgLink);
 
   card.appendChild(cardBody);
 
@@ -85,50 +84,48 @@ function createThreadCard(thread) {
 }
 
 function createReplyCard(reply) {
-  // カードの作成
+  // カード
   const card = document.createElement('div');
   card.className = 'card';
-  card.style.width = '60%';
-  card.style.minWidth = '400px';
-  card.style.margin = '0 auto';
 
-  // アイコンの作成
+  // カードボディ
+  const cardBody = document.createElement('div');
+  cardBody.className = 'card-body';
+
+  // アイコン
   const iconWrapper = document.createElement('div');
-  iconWrapper.className = 'pt-2 ps-2 text-start';
+  iconWrapper.className = 'mb-2 text-start';
   const icon = document.createElement('i');
   icon.className = 'fa-solid fa-reply';
   icon.style.transform = 'rotate(180deg)';
   icon.style.color = '#999';
   iconWrapper.appendChild(icon);
 
-  // カードボディの作成
-  const cardBody = document.createElement('div');
-  cardBody.className = 'card-body';
-
-  // 日付の作成
+  // 日付
   const cardSubtitle = document.createElement('h6');
   cardSubtitle.className = 'card-subtitle mb-2 text-muted';
   cardSubtitle.textContent = reply.createdAt;
 
-  // コンテンツの作成
+  // コンテンツ
   const content = document.createElement('p');
   content.textContent = reply.content;
 
-  // 画像の作成
+  // 画像
   const img = document.createElement('img');
   img.src = `http://localhost:8000/Images/Thumbnails/${reply.imageHash}`;
   img.alt = 'image';
-  const imgAnker = document.createElement('a');
-  imgAnker.href = `http://localhost:8000/Images/Originals/${reply.imageHash}`;
-  imgAnker.appendChild(img);
-  imgAnker.target = '_blank';
+  const imgLink = document.createElement('a');
+  imgLink.href = `http://localhost:8000/Images/Originals/${reply.imageHash}`;
+  imgLink.target = '_blank';
+  imgLink.rel = "noopener noreferrer";
+  imgLink.appendChild(img);
 
   // 要素を組み合わせる
+  cardBody.appendChild(iconWrapper);
   cardBody.appendChild(cardSubtitle);
   cardBody.appendChild(content);
-  if (reply.imageHash) cardBody.appendChild(imgAnker);
+  if (reply.imageHash) cardBody.appendChild(imgLink);
 
-  card.appendChild(iconWrapper);
   card.appendChild(cardBody);
 
   return card;
@@ -136,12 +133,17 @@ function createReplyCard(reply) {
 
 function loadAllReplies(totalCount = 4) {
   const thread = document.getElementById('thread');
-  return thread.childElementCount - 1 >= totalCount;
+  return thread.childElementCount - 1 >= MAX_LOAD_REPLY_NUM || thread.childElementCount - 1 >= totalCount;
 }
 
-function hideMoreRepliesBtn() {
+function changeMoreRepliesBtnDisplay(value) {
   const wrapper = document.getElementById('more-replies-btn-wrapper');
-  wrapper.style.display = 'none';
+  wrapper.style.display = value;
+}
+
+function changeReplyBtnDisplay(value) {
+  const wrapper = document.getElementById('reply-btn-wrapper');
+  wrapper.style.display = value;
 }
 
 async function loadThread() {
@@ -149,12 +151,9 @@ async function loadThread() {
 
   if (resData.success) {
     insertThreadEl(resData.thread);
-    return true;
   } else {
     localStorage.setItem('e', resData.error);
     window.location.href = '/';
-    hideMoreRepliesBtn();
-    return false;
   }
 }
 
@@ -164,18 +163,16 @@ async function loadReplies() {
   if (resData.success) {
     offset += limit;
     insertReplyEls(resData.replies);
+    changeReplyBtnDisplay('block');
 
     if (loadAllReplies(resData.totalCount)) {
-      hideMoreRepliesBtn();
+      changeMoreRepliesBtnDisplay('none');
+    } else {
+      changeMoreRepliesBtnDisplay('block');
     }
-
-    return true;
   } else {
     localStorage.setItem('e', resData.error);
     window.location.href = '/';
-    hideMoreRepliesBtn();
-
-    return false;
   }
 }
 

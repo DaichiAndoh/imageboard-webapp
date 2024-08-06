@@ -1,5 +1,6 @@
 let offset = 0;
 const limit = 10;
+const MAX_LOAD_THREAD_NUM = 100;
 
 async function getAllThreads() {
   const data = new URLSearchParams();
@@ -20,61 +21,58 @@ function insertThreadEls(threads) {
 }
 
 function createThreadCard(thread) {
-  // カードの作成
+  // カード
   const card = document.createElement('div');
   card.className = 'card my-3';
-  card.style.width = '60%';
-  card.style.minWidth = '400px';
-  card.style.margin = '0 auto';
 
-  // カードボディの作成
+  // カードボディ
   const cardBody = document.createElement('div');
   cardBody.className = 'card-body';
 
-  // タイトルの作成
+  // タイトル
   const cardTitle = document.createElement('h5');
   cardTitle.className = 'card-title';
   cardTitle.textContent = thread.subject;
 
-  // 日付の作成
+  // 日付
   const cardSubtitle = document.createElement('h6');
   cardSubtitle.className = 'card-subtitle mb-2 text-muted';
   cardSubtitle.textContent = thread.createdAt;
 
-  // コンテンツの作成
+  // コンテンツ
   const content = document.createElement('p');
   content.textContent = thread.content;
 
-  // 画像の作成
+  // 画像
   const img = document.createElement('img');
   img.src = `http://localhost:8000/Images/Thumbnails/${thread.imageHash}`;
   img.alt = 'image';
-  const imgAnker = document.createElement('a');
-  imgAnker.href = `http://localhost:8000/Images/Originals/${thread.imageHash}`;
-  imgAnker.appendChild(img);
-  imgAnker.target = '_blank';
+  const imgLink = document.createElement('a');
+  imgLink.href = `http://localhost:8000/Images/Originals/${thread.imageHash}`;
+  imgLink.target = '_blank';
+  imgLink.rel = "noopener noreferrer";
+  imgLink.appendChild(img);
 
-  // 仕切りの作成
+  // 仕切り
   const hr = document.createElement('hr');
 
-  // 返信リンクの作成
-  const link = document.createElement('a');
-  link.href = `http://localhost:8000/thread/${thread.postId}`;
-  link.className = 'btn btn-link';
-  link.textContent = 'Threadを確認する';
-
-  const linkWrapper = document.createElement('div');
-  linkWrapper.className = 'text-center';
+  // 詳細ページへのリンク
+  const toThreadPageLink = document.createElement('a');
+  toThreadPageLink.href = `http://localhost:8000/thread/${thread.postId}`;
+  toThreadPageLink.innerHTML = 'スレッドを確認する <i class="fa-solid fa-chevron-right"></i>';
+  toThreadPageLink.style.textDecoration = 'none';
+  toThreadPageLink.style.color = 'black';
+  const toThreadPageLinkWrapper = document.createElement('div');
+  toThreadPageLinkWrapper.className = 'text-end';
+  toThreadPageLinkWrapper.appendChild(toThreadPageLink);
 
   // 要素を組み合わせる
-  linkWrapper.appendChild(link);
-
   cardBody.appendChild(cardTitle);
   cardBody.appendChild(cardSubtitle);
   cardBody.appendChild(content);
-  if (thread.imageHash) cardBody.appendChild(imgAnker);
+  if (thread.imageHash) cardBody.appendChild(imgLink);
   cardBody.appendChild(hr);
-  cardBody.appendChild(linkWrapper);
+  cardBody.appendChild(toThreadPageLinkWrapper);
 
   card.appendChild(cardBody);
 
@@ -83,12 +81,12 @@ function createThreadCard(thread) {
 
 function loadAllThreads(totalCount) {
   const timeline = document.getElementById('timeline');
-  return timeline.childElementCount >= totalCount;
+  return timeline.childElementCount >= MAX_LOAD_THREAD_NUM || timeline.childElementCount >= totalCount;
 }
 
-function hideMoreThreadsBtn() {
+function changeMoreThreadsBtnDisplay(value) {
   const wrapper = document.getElementById('more-threads-btn-wrapper');
-  wrapper.style.display = 'none';
+  wrapper.style.display = value;
 }
 
 async function loadTimeline() {
@@ -99,12 +97,14 @@ async function loadTimeline() {
     insertThreadEls(resData.threads);
   
     if (loadAllThreads(resData.totalCount)) {
-      hideMoreThreadsBtn();
+      changeMoreThreadsBtnDisplay('none');
+    } else {
+      changeMoreThreadsBtnDisplay('block')
     }
   } else {
     localStorage.setItem('e', resData.error);
     window.location.href = '/';
-    hideMoreThreadsBtn();
+    changeMoreThreadsBtnDisplay('none');
   }
 }
 
