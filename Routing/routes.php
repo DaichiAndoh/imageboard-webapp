@@ -94,4 +94,41 @@ return [
 
         return new JSONRenderer(['success' => 1, 'replies' => $replies, 'totalCount' => $totalCount]);
     },
+    '/api/create_reply' => function(string $path): HTTPRenderer {
+        try {
+            // validate input values
+            $threadId = ValidationHelper::integer((int)$_POST['threadId'], '', 1);
+            $content = ValidationHelper::str($_POST['content'], 'content', 1, Post::CONTENT_MAX_LENGTH);
+            $useImage = $_FILES['file']['name'];
+            if ($useImage) {
+                $fileType = ValidationHelper::imageType($_FILES['file']['type'], "file");
+                $fileSize = ValidationHelper::fileSize($_FILES['file']['size'], "file");
+            }
+
+            // save image file to storage
+            $imageHash = null;
+            if ($useImage) {
+                $imageHash = ImageHelper::saveImage(
+                    $_FILES['file']['tmp_name'],
+                    ImageHelper::imageTypeToExtension($_FILES['file']['type']),
+                );
+            }
+
+            // insert post data to db
+            $postDao = new PostDAOImpl();
+            $result = $postDao->create(new Post(
+                replyToId: $threadId,
+                content: $content,
+                imageHash: $imageHash,
+            ));
+            if (!$result) throw new Exception();
+
+            return new JSONRenderer(['success' => 1]);
+        } catch (ValidationException $error) {
+            return new JSONRenderer(['success' => 0, 'field' => $error->field, 'message' => $error->getMessage()]);
+        } catch (Exception $error) {
+            // TODO: Errorハンドリング処理修正
+            return new JSONRenderer(['success' => 0]);
+        }
+    },
 ];

@@ -1,5 +1,5 @@
 let offset = 0;
-const limit = 10;
+const limit = 5;
 const MAX_LOAD_REPLY_NUM = 100;
 
 async function getThread() {
@@ -146,6 +146,14 @@ function changeReplyBtnDisplay(value) {
   wrapper.style.display = value;
 }
 
+function setThreadIdInputValue() {
+  const path = window.location.pathname;
+  const pathArray = path.split('/');
+  const postId = pathArray[pathArray.length - 1];
+  const idInput = document.getElementById('thread-id');
+  idInput.value = postId;
+}
+
 async function loadThread() {
   const resData = await getThread();
 
@@ -182,6 +190,7 @@ async function loadThreadAndReplies() {
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
+  setThreadIdInputValue();
   await loadThreadAndReplies();
 
   const btn = document.getElementById('more-replies-btn');

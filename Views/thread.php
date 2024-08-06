@@ -31,7 +31,8 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form>
+                        <form method="post" id="create-reply-form">
+                            <input id="thread-id" type="hidden" name="threadId">
                             <div class="mb-3">
                                 <label for="content" class="form-label">コンテンツ</label>
                                 <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
@@ -56,3 +57,4 @@
 </div>
 
 <script src="http://localhost:8000/js/thread.js"></script>
+<script src="http://localhost:8000/js/reply.js"></script>
