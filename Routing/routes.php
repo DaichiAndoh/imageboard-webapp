@@ -10,10 +10,10 @@ use Response\Render\HTMLRenderer;
 use Response\Render\JSONRenderer;
 
 return [
-    '/' => function(string $path): HTTPRenderer {
+    '/^\/$/' => function(string $path): HTTPRenderer {
         return new HTMLRenderer('timeline', []);
     },
-    '/api/get_all_threads' => function(string $path): HTTPRenderer {
+    '/^\/api\/get_all_threads$/' => function(string $path): HTTPRenderer {
         try {
             $offset = ValidationHelper::integer($_POST['offset'] ?? 0, '', 0);
             $limit = ValidationHelper::integer($_POST['limit'] ?? 10, '', 0, 100);
@@ -29,7 +29,7 @@ return [
             return new JSONRenderer(['success' => 0, 'error' => $error->getMessage()]);
         }
     },
-    '/api/create_thread' => function(string $path): HTTPRenderer {
+    '/^\/api\/create_thread$/' => function(string $path): HTTPRenderer {
         try {
             // validate input values
             $subject = ValidationHelper::str($_POST['subject'], 'subject',  1, Post::SUBJECT_MAX_LENGTH);
@@ -66,10 +66,10 @@ return [
             return new JSONRenderer(['success' => 0]);
         }
     },
-    '/thread' => function(string $path): HTTPRenderer {
+    '/^\/thread\/\d+$/' => function(string $path): HTTPRenderer {
         return new HTMLRenderer('thread', []);
     },
-    '/api/get_thread' => function(string $path): HTTPRenderer {
+    '/^\/api\/get_thread\/\d+$/' => function(string $path): HTTPRenderer {
         // get thread(post) info
         $pathArray = preg_split('/\//', $path);
         $threadId = $pathArray[3];
@@ -79,7 +79,7 @@ return [
 
         return new JSONRenderer(['success' => 1, 'thread' => $thread]);
     },
-    '/api/get_replies' => function(string $path): HTTPRenderer {
+    '/^\/api\/get_replies\/\d+$/' => function(string $path): HTTPRenderer {
         // get thread(post) info
         $pathArray = preg_split('/\//', $path);
         $threadId = $pathArray[3];
@@ -94,7 +94,7 @@ return [
 
         return new JSONRenderer(['success' => 1, 'replies' => $replies, 'totalCount' => $totalCount]);
     },
-    '/api/create_reply' => function(string $path): HTTPRenderer {
+    '/^\/api\/create_reply$/' => function(string $path): HTTPRenderer {
         try {
             // validate input values
             $threadId = ValidationHelper::integer((int)$_POST['threadId'], '', 1);

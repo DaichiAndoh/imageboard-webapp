@@ -1,9 +1,9 @@
 <?php
 require_once '../vendor/autoload.php';
 
-use Exceptions\ValidationException;
 use Exceptions\FileUploadException;
 use Exceptions\NotFoundException;
+use Exceptions\ValidationException;
 
 $DEBUG = true;
 
@@ -15,23 +15,20 @@ if (preg_match('/\.(?:png|jpg|jpeg|gif|js|css|html)$/', $_SERVER["REQUEST_URI"])
 $routes = include('../Routing/routes.php');
 
 // リクエストURIを解析してパスだけを取得
-$originalPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = $originalPath;
-if (preg_match_all('/^\/thread\/\d+/', $path)) {
-    $path = '/thread';
-}
-if (preg_match_all('/^\/api\/get_thread\/\d+/', $path)) {
-    $path = '/api/get_thread';
-}
-if (preg_match_all('/^\/api\/get_replies\/\d+/', $path)) {
-    $path = '/api/get_replies';
-}
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // ルートにパスが存在するかチェック
-if (isset($routes[$path])) {
-    // コールバックを呼び出してrendererを作成
+$controller = null;
+foreach ($routes as $pathPattern => $func) {
+    if (preg_match($pathPattern, $path)) {
+        $controller = $func;
+    }
+}
+
+if ($controller !== null) {
     try {
-        $renderer = $routes[$path]($originalPath);
+        // コールバックを呼び出してrendererを作成
+        $renderer = $controller($path);
 
         // ヘッダーを設定
         foreach ($renderer->getFields() as $name => $value) {
