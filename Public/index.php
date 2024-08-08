@@ -4,8 +4,9 @@ require_once '../vendor/autoload.php';
 use Exceptions\FileUploadException;
 use Exceptions\NotFoundException;
 use Exceptions\ValidationException;
+use Helpers\Settings;
 
-$DEBUG = true;
+$DEBUG = Settings::env('DEBUG');
 
 if (preg_match('/\.(?:png|jpg|jpeg|gif|js|css|html)$/', $_SERVER["REQUEST_URI"])) {
     return false;
