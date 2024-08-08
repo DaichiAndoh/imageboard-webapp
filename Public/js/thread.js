@@ -1,6 +1,7 @@
 let offset = 0;
 const limit = 5;
 const MAX_LOAD_REPLY_NUM = 100;
+const URL = `${window.location.protocol}//${window.location.host}`;
 
 function setThreadIdInputValue() {
   const path = window.location.pathname;
@@ -113,10 +114,10 @@ function createThreadCard(thread) {
 
   // 画像
   const img = document.createElement('img');
-  img.src = `http://localhost:8000/Images/Thumbnails/${thread.imageHash}`;
+  img.src = `${URL}/Images/Thumbnails/${thread.imageHash}`;
   img.alt = 'image';
   const imgLink = document.createElement('a');
-  imgLink.href = `http://localhost:8000/Images/Originals/${thread.imageHash}`;
+  imgLink.href = `${URL}/Images/Originals/${thread.imageHash}`;
   imgLink.target = '_blank';
   imgLink.rel = "noopener noreferrer";
   imgLink.appendChild(img);
@@ -161,10 +162,10 @@ function createReplyCard(reply) {
 
   // 画像
   const img = document.createElement('img');
-  img.src = `http://localhost:8000/Images/Thumbnails/${reply.imageHash}`;
+  img.src = `${URL}/Images/Thumbnails/${reply.imageHash}`;
   img.alt = 'image';
   const imgLink = document.createElement('a');
-  imgLink.href = `http://localhost:8000/Images/Originals/${reply.imageHash}`;
+  imgLink.href = `${URL}/Images/Originals/${reply.imageHash}`;
   imgLink.target = '_blank';
   imgLink.rel = "noopener noreferrer";
   imgLink.appendChild(img);

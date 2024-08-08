@@ -1,6 +1,7 @@
 let offset = 0;
 const limit = 10;
 const MAX_LOAD_THREAD_NUM = 100;
+const URL = `${window.location.protocol}//${window.location.host}`;
 
 async function loadTimeline() {
   const resData = await getAllThreads();
@@ -66,10 +67,10 @@ function createThreadCard(thread) {
 
   // 画像
   const img = document.createElement('img');
-  img.src = `http://localhost:8000/Images/Thumbnails/${thread.imageHash}`;
+  img.src = `${URL}/Images/Thumbnails/${thread.imageHash}`;
   img.alt = 'image';
   const imgLink = document.createElement('a');
-  imgLink.href = `http://localhost:8000/Images/Originals/${thread.imageHash}`;
+  imgLink.href = `${URL}/Images/Originals/${thread.imageHash}`;
   imgLink.target = '_blank';
   imgLink.rel = "noopener noreferrer";
   imgLink.appendChild(img);
@@ -79,7 +80,7 @@ function createThreadCard(thread) {
 
   // 詳細ページへのリンク
   const toThreadPageLink = document.createElement('a');
-  toThreadPageLink.href = `http://localhost:8000/thread/${thread.postId}`;
+  toThreadPageLink.href = `${URL}/thread/${thread.postId}`;
   toThreadPageLink.innerHTML = 'スレッドを確認する <i class="fa-solid fa-chevron-right"></i>';
   toThreadPageLink.style.textDecoration = 'none';
   toThreadPageLink.style.color = 'black';

@@ -56,4 +56,4 @@
     </div>
 </div>
 
-<script src="http://localhost:8000/js/thread.js"></script>
+<script src="/js/thread.js"></script>

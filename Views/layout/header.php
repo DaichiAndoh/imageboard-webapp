@@ -11,7 +11,7 @@
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/934007e345.js" crossorigin="anonymous"></script>
 
-    <script src="http://localhost:8000/js/common.js"></script>
+    <script src="/js/common.js"></script>
     <title>Imageboard-Webapp</title>
 </head>
 <body>

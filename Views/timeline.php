@@ -10,4 +10,4 @@
     </div>
 </div>
 
-<script src="js/timeline.js"></script>
+<script src="/js/timeline.js"></script>
