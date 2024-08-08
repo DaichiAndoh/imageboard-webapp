@@ -39,18 +39,18 @@
                 <form method="post" id="create-thread-form">
                     <div class="mb-3">
                         <label for="subject" class="form-label">タイトル</label>
-                        <input type="text" class="form-control" id="subject" name="subject" required>
-                        <div id="subject-error-msg" class="invalid-feedback"></div>
+                        <input type="text" class="form-control" id="thread-subject" name="subject" required>
+                        <div id="thread-subject-error-msg" class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
                         <label for="content" class="form-label">コンテンツ</label>
-                        <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
-                        <div id="content-error-msg" class="invalid-feedback"></div>
+                        <textarea class="form-control" id="thread-content" name="content" rows="3" required></textarea>
+                        <div id="thread-content-error-msg" class="invalid-feedback"></div>
                     </div>
                     <div class="mb-3">
                         <label for="file" class="form-label">イメージ</label>
-                        <input type="file" class="form-control" id="file" name="file" accept=".jpg, .jpeg, .png, .gif">
-                        <div id="file-error-msg" class="invalid-feedback"></div>
+                        <input type="file" class="form-control" id="thread-file" name="file" accept=".jpg, .jpeg, .png, .gif">
+                        <div id="thread-file-error-msg" class="invalid-feedback"></div>
                     </div>
 
                     <div class="mt-5 text-end">

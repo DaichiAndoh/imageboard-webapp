@@ -17,13 +17,13 @@ return [
         try {
             $offset = ValidationHelper::integer($_POST['offset'] ?? 0, '', 0);
             $limit = ValidationHelper::integer($_POST['limit'] ?? 10, '', 0, 100);
-    
+
             $postDao = new PostDAOImpl();
             $threads = $postDao->getAllThreads($offset, $limit);
             $totalCount = $postDao->getTotalCountOfThread();
-    
+
             if ($threads === null) throw new Exception('No threads are available!');
-    
+
             return new JSONRenderer(['success' => 1, 'threads' => $threads, 'totalCount' => $totalCount]);
         } catch (Exception $error) {
             return new JSONRenderer(['success' => 0, 'error' => $error->getMessage()]);
@@ -62,37 +62,48 @@ return [
         } catch (ValidationException $error) {
             return new JSONRenderer(['success' => 0, 'field' => $error->field, 'message' => $error->getMessage()]);
         } catch (Exception $error) {
-            // TODO: Errorハンドリング処理修正
-            return new JSONRenderer(['success' => 0]);
+            return new JSONRenderer(['success' => 0, 'error' => $error->getMessage()]);
         }
     },
     '/^\/thread\/\d+$/' => function(string $path): HTTPRenderer {
         return new HTMLRenderer('thread', []);
     },
     '/^\/api\/get_thread\/\d+$/' => function(string $path): HTTPRenderer {
-        // get thread(post) info
-        $pathArray = preg_split('/\//', $path);
-        $threadId = $pathArray[3];
+        try {
+            // get thread(post) info
+            $pathArray = preg_split('/\//', $path);
+            $threadId = $pathArray[3];
 
-        $postDao = new PostDAOImpl();
-        $thread = $postDao->getById($threadId);
+            // validate id
+            $threadId = ValidationHelper::integer($threadId, '', 0);
 
-        return new JSONRenderer(['success' => 1, 'thread' => $thread]);
+            $postDao = new PostDAOImpl();
+            $thread = $postDao->getById($threadId);
+
+            return new JSONRenderer(['success' => 1, 'thread' => $thread]);
+        } catch (Exception $error) {
+            return new JSONRenderer(['success' => 0, 'error' => $error->getMessage()]);
+        }
     },
     '/^\/api\/get_replies\/\d+$/' => function(string $path): HTTPRenderer {
-        // get thread(post) info
-        $pathArray = preg_split('/\//', $path);
-        $threadId = $pathArray[3];
+        try {
+            // get thread(post) info
+            $pathArray = preg_split('/\//', $path);
+            $threadId = $pathArray[3];
 
-        // validate input values
-        $offset = ValidationHelper::integer($_POST['offset'] ?? 0, '', 0);
-        $limit = ValidationHelper::integer($_POST['limit'] ?? 10, '', 0, 100);
+            // validate input values
+            $threadId = ValidationHelper::integer($threadId, '', 0);
+            $offset = ValidationHelper::integer($_POST['offset'] ?? 0, '', 0);
+            $limit = ValidationHelper::integer($_POST['limit'] ?? 10, '', 0, 100);
 
-        $postDao = new PostDAOImpl();
-        $replies = $postDao->getReplies($threadId, $offset, $limit);
-        $totalCount = $postDao->getTotalCountOfReply($threadId);
+            $postDao = new PostDAOImpl();
+            $replies = $postDao->getReplies($threadId, $offset, $limit);
+            $totalCount = $postDao->getTotalCountOfReply($threadId);
 
-        return new JSONRenderer(['success' => 1, 'replies' => $replies, 'totalCount' => $totalCount]);
+            return new JSONRenderer(['success' => 1, 'replies' => $replies, 'totalCount' => $totalCount]);
+        } catch (Exception $error) {
+            return new JSONRenderer(['success' => 0, 'error' => $error->getMessage()]);
+        }
     },
     '/^\/api\/create_reply$/' => function(string $path): HTTPRenderer {
         try {
@@ -127,8 +138,7 @@ return [
         } catch (ValidationException $error) {
             return new JSONRenderer(['success' => 0, 'field' => $error->field, 'message' => $error->getMessage()]);
         } catch (Exception $error) {
-            // TODO: Errorハンドリング処理修正
-            return new JSONRenderer(['success' => 0]);
+            return new JSONRenderer(['success' => 0, 'error' => $error->getMessage()]);
         }
     },
 ];

@@ -2,6 +2,55 @@ let offset = 0;
 const limit = 5;
 const MAX_LOAD_REPLY_NUM = 100;
 
+function setThreadIdInputValue() {
+  const path = window.location.pathname;
+  const pathArray = path.split('/');
+  const postId = pathArray[pathArray.length - 1];
+  const idInput = document.getElementById('thread-id');
+  idInput.value = postId;
+}
+
+async function loadThreadAndReplies() {
+  await loadThread();
+  await loadReplies();
+}
+
+async function loadThread() {
+  const resData = await getThread();
+
+  if (resData === null) return;
+
+  if (resData.success) {
+    insertThreadEl(resData.thread);
+  } else {
+    console.error(resData.error);
+    localStorage.setItem('e', 'スレッドデータの取得に失敗しました。');
+    window.location.href = '/';
+  }
+}
+
+async function loadReplies() {
+  const resData = await getReplies();
+
+  if (resData === null) return;
+
+  if (resData.success) {
+    insertReplyEls(resData.replies);
+    changeReplyBtnDisplay('block');
+    offset += limit;
+
+    if (loadAllReplies(resData.totalCount)) {
+      changeMoreRepliesBtnDisplay('none');
+    } else {
+      changeMoreRepliesBtnDisplay('block');
+    }
+  } else {
+    console.error(resData.error);
+    localStorage.setItem('e', 'リプライデータの取得に失敗しました。');
+    window.location.href = '/';
+  }
+}
+
 async function getThread() {
   const path = window.location.pathname;
   const pathArray = path.split('/');
@@ -146,47 +195,16 @@ function changeReplyBtnDisplay(value) {
   wrapper.style.display = value;
 }
 
-function setThreadIdInputValue() {
-  const path = window.location.pathname;
-  const pathArray = path.split('/');
-  const postId = pathArray[pathArray.length - 1];
-  const idInput = document.getElementById('thread-id');
-  idInput.value = postId;
+async function resetFormValidation() {
+  const invalidInputs = document.querySelectorAll('input.is-invalid, textarea.is-invalid');
+  invalidInputs.forEach(function(input) {
+    input.classList.remove('is-invalid');
+  });
 }
 
-async function loadThread() {
-  const resData = await getThread();
-
-  if (resData.success) {
-    insertThreadEl(resData.thread);
-  } else {
-    localStorage.setItem('e', resData.error);
-    window.location.href = '/';
-  }
-}
-
-async function loadReplies() {
-  const resData = await getReplies();
-
-  if (resData.success) {
-    offset += limit;
-    insertReplyEls(resData.replies);
-    changeReplyBtnDisplay('block');
-
-    if (loadAllReplies(resData.totalCount)) {
-      changeMoreRepliesBtnDisplay('none');
-    } else {
-      changeMoreRepliesBtnDisplay('block');
-    }
-  } else {
-    localStorage.setItem('e', resData.error);
-    window.location.href = '/';
-  }
-}
-
-async function loadThreadAndReplies() {
-  await loadThread();
-  await loadReplies();
+async function createReply(formData) {
+  const resData = await apiPost('/api/create_reply', formData);
+  return resData;
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -196,5 +214,29 @@ document.addEventListener('DOMContentLoaded', async function () {
   const btn = document.getElementById('more-replies-btn');
   btn.addEventListener('click', async function() {
     await loadReplies();
-  })
+  });
+
+  const form = document.getElementById('create-reply-form');
+  form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    resetFormValidation();
+    const formData = new FormData(form);
+    const resData = await createReply(formData);
+
+    if (resData === null) return;
+
+    if (resData.success) {
+      localStorage.setItem('s', 'リプライを作成しました。');
+      window.location.reload();
+    } else if (resData.field) {
+      const field = document.getElementById(`reply-${resData.field}`);
+      field.classList.add('is-invalid');
+      const errorMsg = document.getElementById(`reply-${resData.field}-error-msg`);
+      errorMsg.innerText = resData.message;
+    } else {
+      console.error(resData.error);
+      localStorage.setItem('e', 'リプライの作成に失敗しました。再度作成してください。');
+      window.location.reload();
+    }
+  });
 });

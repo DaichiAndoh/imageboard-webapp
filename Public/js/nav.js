@@ -1,15 +1,3 @@
-async function createThread(formData) {
-  const resData = await apiPost('/api/create_thread', formData);
-  return resData;
-}
-
-async function resetFormValidation() {
-  const invalidInputs = document.querySelectorAll('input.is-invalid, textarea.is-invalid');
-  invalidInputs.forEach(function(input) {
-    input.classList.remove('is-invalid');
-  });
-}
-
 function checkAlert() {
   const successMessage = localStorage.getItem('s');
   if (successMessage) {
@@ -30,6 +18,18 @@ function checkAlert() {
   }
 }
 
+async function resetFormValidation() {
+  const invalidInputs = document.querySelectorAll('input.is-invalid, textarea.is-invalid');
+  invalidInputs.forEach(function(input) {
+    input.classList.remove('is-invalid');
+  });
+}
+
+async function createThread(formData) {
+  const resData = await apiPost('/api/create_thread', formData);
+  return resData;
+}
+
 document.addEventListener('DOMContentLoaded', async function () {
   checkAlert();
 
@@ -40,16 +40,19 @@ document.addEventListener('DOMContentLoaded', async function () {
     const formData = new FormData(form);
     const resData = await createThread(formData);
 
+    if (resData === null) return;
+
     if (resData.success) {
-      localStorage.setItem('s', 'Threadを作成しました。');
+      localStorage.setItem('s', 'スレッドを作成しました。');
       window.location.href = '/';
     } else if (resData.field) {
-      const field = document.getElementById(resData.field);
+      const field = document.getElementById(`thread-${resData.field}`);
       field.classList.add('is-invalid');
-      const errorMsg = document.getElementById(`${resData.field}-error-msg`);
+      const errorMsg = document.getElementById(`thread-${resData.field}-error-msg`);
       errorMsg.innerText = resData.message;
     } else {
-      localStorage.setItem('e', 'Threadの作成に失敗しました。再度作成してください。');
+      console.error(resData.error);
+      localStorage.setItem('e', 'スレッドの作成に失敗しました。再度作成してください。');
       window.location.href = '/';
     }
   });

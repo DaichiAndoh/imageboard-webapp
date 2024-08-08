@@ -2,6 +2,27 @@ let offset = 0;
 const limit = 10;
 const MAX_LOAD_THREAD_NUM = 100;
 
+async function loadTimeline() {
+  const resData = await getAllThreads();
+
+  if (resData === null) return;
+
+  if (resData.success) {
+    insertThreadEls(resData.threads);
+    offset += limit;
+
+    if (loadAllThreads(resData.totalCount)) {
+      changeMoreThreadsBtnDisplay('none');
+    } else {
+      changeMoreThreadsBtnDisplay('block')
+    }
+  } else {
+    console.error(resData.error);
+    localStorage.setItem('e', 'タイムラインンデータの取得に失敗しました。');
+    window.location.href = '/';
+  }
+}
+
 async function getAllThreads() {
   const data = new URLSearchParams();
   data.append('offset', offset);
@@ -87,25 +108,6 @@ function loadAllThreads(totalCount) {
 function changeMoreThreadsBtnDisplay(value) {
   const wrapper = document.getElementById('more-threads-btn-wrapper');
   wrapper.style.display = value;
-}
-
-async function loadTimeline() {
-  const resData = await getAllThreads();
-
-  if (resData.success) {
-    offset += limit;
-    insertThreadEls(resData.threads);
-  
-    if (loadAllThreads(resData.totalCount)) {
-      changeMoreThreadsBtnDisplay('none');
-    } else {
-      changeMoreThreadsBtnDisplay('block')
-    }
-  } else {
-    localStorage.setItem('e', resData.error);
-    window.location.href = '/';
-    changeMoreThreadsBtnDisplay('none');
-  }
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
