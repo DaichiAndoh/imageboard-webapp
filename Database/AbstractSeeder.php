@@ -7,7 +7,7 @@ use Helpers\StringHelper;
 abstract class AbstractSeeder implements Seeder {
     protected MySQLWrapper $conn;
     protected ?string $tableName = null;
-    protected int $recordCount = 5;
+    protected int $recordCount = 20;
 
     // テーブルカラムは、'data_type' と 'column_name' を含む連想配列の配列
     protected array $tableColumns = [];
