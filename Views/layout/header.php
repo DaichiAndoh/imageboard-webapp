@@ -18,7 +18,7 @@
     <!-- nav -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="/">Imageboard-webapp</a>
+            <a class="navbar-brand" href="/">Imageboard-Webapp</a>
 
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#ceateModal">
