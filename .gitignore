@@ -1,7 +1,7 @@
 .DS_Store
 vendor
 .env
-Public/Images/Originals/*
-!Public/Images/Originals/.gitkeep
-Public/Images/Thumbnails/*
-!Public/Images/Thumbnails/.gitkeep
+Public/images/originals/*
+!Public/images/originals/.gitkeep
+Public/images/thumbnails/*
+!Public/images/thumbnails/.gitkeep

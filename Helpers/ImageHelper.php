@@ -18,13 +18,13 @@ class ImageHelper {
     }
 
     private static function saveOriginalImage(string $uploadedFilePath, string $imageHash): void {
-        $imagePath = sprintf("%s/../Public/Images/Originals/%s", __DIR__, $imageHash);
+        $imagePath = sprintf("%s/../Public/images/originals/%s", __DIR__, $imageHash);
         move_uploaded_file($uploadedFilePath, $imagePath);
     }
 
     private static function saveThumbnailImage(string $imageHash): void {
-        $originalImagePath = sprintf("%s/../Public/Images/Originals/%s", __DIR__, $imageHash);
-        $thumbnailImagePath = sprintf("%s/../Public/Images/Thumbnails/%s", __DIR__, $imageHash);
+        $originalImagePath = sprintf("%s/../Public/images/originals/%s", __DIR__, $imageHash);
+        $thumbnailImagePath = sprintf("%s/../Public/images/thumbnails/%s", __DIR__, $imageHash);
 
         $output=null;
         $retval=null;

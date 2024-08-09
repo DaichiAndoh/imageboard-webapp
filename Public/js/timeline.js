@@ -63,14 +63,14 @@ function createThreadCard(thread) {
 
   // コンテンツ
   const content = document.createElement('p');
-  content.textContent = thread.content;
+  content.innerText = thread.content;
 
   // 画像
   const img = document.createElement('img');
-  img.src = `${URL}/Images/Thumbnails/${thread.imageHash}`;
+  img.src = `${URL}/images/thumbnails/${thread.imageHash}`;
   img.alt = 'image';
   const imgLink = document.createElement('a');
-  imgLink.href = `${URL}/Images/Originals/${thread.imageHash}`;
+  imgLink.href = `${URL}/images/originals/${thread.imageHash}`;
   imgLink.target = '_blank';
   imgLink.rel = "noopener noreferrer";
   imgLink.appendChild(img);

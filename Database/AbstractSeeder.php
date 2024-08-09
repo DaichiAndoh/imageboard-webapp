@@ -85,16 +85,16 @@ abstract class AbstractSeeder implements Seeder {
 
     // 画像ファイルを生成する
     protected function createImages(): array {
-        $sampleImagePath = sprintf("%s/../Public/Images/sample.png", __DIR__);
+        $sampleImagePath = sprintf("%s/../Public/images/sample.png", __DIR__);
         $imageHashList = [];
 
         for ($i = 0; $i < $this->recordCount; $i++) {
             $imageHash = md5(StringHelper::generateRandomStr() . date('Y-m-d H:i:s')) . '.png';
 
-            $originalImagePath = sprintf("%s/../Public/Images/Originals/%s", __DIR__, $imageHash);
+            $originalImagePath = sprintf("%s/../Public/images/originals/%s", __DIR__, $imageHash);
             copy($sampleImagePath, $originalImagePath);
 
-            $thumbnailImagePath = sprintf("%s/../Public/Images/Thumbnails/%s", __DIR__, $imageHash);
+            $thumbnailImagePath = sprintf("%s/../Public/images/thumbnails/%s", __DIR__, $imageHash);
             $output=null;
             $retval=null;
             $command = sprintf("magick %s -resize 300x300! %s", $sampleImagePath, $thumbnailImagePath);
