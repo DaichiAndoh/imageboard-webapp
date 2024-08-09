@@ -97,7 +97,7 @@ abstract class AbstractSeeder implements Seeder {
             $thumbnailImagePath = sprintf("%s/../Public/images/thumbnails/%s", __DIR__, $imageHash);
             $output=null;
             $retval=null;
-            $command = sprintf("magick %s -resize 300x300! %s", $sampleImagePath, $thumbnailImagePath);
+            $command = sprintf("convert %s -resize 300x300! %s", $sampleImagePath, $thumbnailImagePath);
             exec($command, $output, $retval);
 
             $imageHashList[] = $imageHash;

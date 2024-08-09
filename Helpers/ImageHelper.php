@@ -28,7 +28,7 @@ class ImageHelper {
 
         $output=null;
         $retval=null;
-        $command = sprintf("magick %s -resize 300x300! %s", $originalImagePath, $thumbnailImagePath);
+        $command = sprintf("convert %s -resize 300x300! %s", $originalImagePath, $thumbnailImagePath);
         exec($command, $output, $retval);
     }
 }
