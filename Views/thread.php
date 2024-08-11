@@ -19,7 +19,7 @@
     <div id="reply-btn-wrapper" class="mb-3 text-center" style="display: none;">
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#replyModal">
-            <i class="fa-solid fa-reply" aria-hidden="true" style="transform: rotate(180deg);"></i> Reply
+            <i class="fa-solid fa-reply" aria-hidden="true" style="transform: rotate(180deg);"></i> リプライ
         </button>
 
         <!-- Modal -->
