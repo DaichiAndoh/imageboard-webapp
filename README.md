@@ -162,3 +162,51 @@ class SampleSeeder extends AbstractSeeder {
 ```
 $ php console seed
 ```
+
+### Architecture
+
+主要なディレクトリとファイルの一覧と簡単な説明は以下です。
+
+```
+imageboard-webapp/
+├ Commands // consoleから実行されるコマンドラインプログラム関連
+├ Constracts // 各種定数
+├ Database // データベース関連
+├ Docs // ドキュメント関連, アプリケーションに関係なし
+├ Exceptions // 例外
+├ Helpers // ヘルパー
+├ Models // モデルオブジェクト
+├ Public // 公開ファイル, この中の index.php がアプリケーションのエントリーポイント
+├ Response // レスポンスデータを管理するオブジェクト
+├ Routing // エンドポイントとその処理をまとめたルーティングファイル
+├ Views // UI画面
+└ console // コマンド実行のエントリーポイント
+```
+
+アプリケーションとしては、`Public/index.php` がエントリーポイントとなります。
+`Public/index.php` は、`Routing/routes.php` を用いて、アクセスに応じた処理を実行します。
+`Routing/routes.php` では、データベースへのアクセスが必要であればDAOを用いて、必要な処理を実行します。
+そして、JSONもしくはHTMLレスポンスオブジェクトを返します。HTMLレスポンスの場合は、画面表示するViewファイルを紐付けます。
+
+これは MVC に沿った設計です。
+`Routing/routes.php` がController、`Views/*` がView、DAOを含むモデルオブジェクトがModelに該当します。
+
+また、データベースマイグレーション等のコマンドラインプログラムは `console` がエントリーポイントとなります。`console` は引数に与えられた値に対応したコマンドラインプログラム（`Commands/Programs/*`）を実行します。
+
+### Routes
+
+このアプリケーションはCSRを採用しています。
+`/` や `/thread/[id]` などの `/api` で始まらないルートはViewファイルを返すのみです。
+そして、`/api` で始まるルートはAPIのエンドポイントとなります。
+
+つまり、前者のルートで静的なViewファイルのみを返し、そのViewファイルが後者のAPIエンドポイントに適宜アクセスしてページをレンダリングします。
+
+| ルート | 説明 |
+|-----------|-----------|
+| / | トップページに表示するタイムラインのViewファイルを返す |
+| /api/get_all_threads | タイムラインに表示するスレッドデータを返す |
+| /api/create_thread | スレッドを作成する |
+| /thread/[id] | スレッドを表示するViewファイルを返す |
+| /api/get_thread/[id] | [id]に対応するスレッドデータを返す |
+| /api/get_replies/[id] | [id]に対応するスレッドのリプライデータを返す |
+| /api/create_reply | リプライを作成する |
