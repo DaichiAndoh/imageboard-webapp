@@ -8,7 +8,10 @@
 
 ## URL
 
-https://imageboard.d-andoh.com
+> [!WARNING]
+> 現在このURLは無効です。
+
+~~https://imageboard.d-andoh.com~~
 
 ## About
 
